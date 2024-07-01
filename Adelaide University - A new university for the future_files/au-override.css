@@ -1,0 +1,15 @@
+.tabs-block .tabs .tabs-title {
+ 	width: 100% !important;
+}
+@media (min-width: 48em) {
+	.tabs-block .tabs .tabs-title {
+	    width: initial !important;
+}
+    .tabs-block .tabs .tabs-title a span {
+        font-size: 24px;
+    }
+
+    .tabs-block .tabs {
+        column-gap: 20px;
+    }
+}

@@ -1,0 +1,91 @@
+﻿function initiateFBAutocomplete2(server,collection,profile,site) {
+    // defaults
+    var serv = "http://search.unisa.edu.au";
+    var suggest_path = "/s/suggest.json";
+    var prof = "_default";
+    var coll = "unisa";
+    var target_site = "";
+    var svgClass = null;
+    var svgIcon = null;
+
+    if (profile != null) {
+        prof = profile;
+    }
+    if (collection != null) {
+        coll = collection;
+    }
+    if (server != null) {
+        serv = server;
+    }
+    if (site != null) {
+        target_site = site;
+    }
+    if (target_site == "unisaonline") {
+        svgClass = "theme-icon-green-2 icon30";
+        svgIcon = "search-people";
+    }
+
+    // autocomplete path
+    var suggest_location = serv + suggest_path;
+
+    jQuery(document).ready(function () {
+        // Auto-completion setup
+        try {
+            jQuery('input.fb-header-query').qc({
+                program: suggest_location,
+                alpha: '0.5',
+                show: '10',
+                sort: '0',
+                length: '3',
+                typeahead: {
+                    hint: true,
+                    classNames: {
+                        menu: 'search-results-best-bets',
+                        input: 'input-group-field',
+                        dataset: 'search-results theme-white',
+                        suggestion: 'search-results-list theme-links-white',
+                    }
+                },
+                datasets: {
+                    organic: {
+                        name: 'Recommended for you',
+                        collection: coll,
+                        profile: prof,
+                        svg_class: svgClass,
+                        svg_icon: svgIcon,
+                        site: target_site,
+                    }
+                }
+            });
+            var searchBtn = $("#header-search-button");
+            if (searchBtn != null) {
+                if (!$('#searchterm').val()) {
+                    searchBtn.attr('disabled', true);
+                }
+            }
+
+            $("#searchterm").bind('input propertychange', function () {
+                if (this.value == "") {
+                    searchButton();
+                }
+            });
+        }
+        catch (ex) {  }
+
+    });
+}
+
+
+
+
+
+function searchButton() {
+    var searchBtn = $("#header-search-button");
+    if ($('#searchterm').val()) {
+        searchBtn.attr('disabled', false);
+    }
+    else {
+        searchBtn.attr('disabled', true);
+    }
+}
+

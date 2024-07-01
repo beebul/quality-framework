@@ -1,0 +1,3 @@
+﻿document.getElementsByClassName('submit-button')[0].innerHTML = '<span class="svg-wrapper theme-blue-6"><svg class="arrow-small-right"><title>arrow-small-right</title><use xlink:href="/Areas/Int/Static/themes/u17/assets/icons/icons.svg#arrow-small-right"></use></svg></span>';
+
+$(".top-header__logo-col").append($(".logo-wrapper"));

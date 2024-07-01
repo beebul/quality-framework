@@ -1,0 +1,133 @@
+﻿var infoWindows = {};
+function initEmbedMap() {
+
+    // Setup the dynamic contact maps
+    var maps = document.getElementsByClassName('dynamic-contact-map');
+    for (var i = 0; i < maps.length; i++) {
+        var mapEle = maps[i];
+
+        var latitude = parseFloat(mapEle.getAttribute("data-latitude"));
+        var longitude = parseFloat(mapEle.getAttribute("data-longitude"));
+        var defaultMarker = { lat: latitude, lng: longitude };
+
+        var map = new google.maps.Map(mapEle, {
+            zoom: 15,
+            center: defaultMarker,
+            mapTypeId: google.maps.MapTypeId.ROAD,
+            scrollwheel: false,
+            controlSize: 28
+        });
+
+        var controls = {
+            mapTypeControl: false,
+            zoomControl: true,
+            panControl: true,
+            streetViewControl: false
+        };
+
+        var tooltipContent = "";
+        var parentRow = $(mapEle).parents(".layout-block").first();
+
+        if (parentRow.hasClass("dynamic-contact-block")) {
+            map.setOptions(controls);
+        }
+
+        var tooltip = parentRow.find(".property-tooltip");
+        if (tooltip.length > 0) {
+            // Google Embed block as this uses the .property-tooltip class
+            tooltipContent += "<div class='info-window'>";
+            tooltipContent += tooltip.html();
+            tooltipContent += "<a style='float:right;margin-top:-15px;' href='https://www.google.com/maps/dir//" + latitude + "," + longitude + "' target='_blank'>Get directions</a>";
+            tooltipContent += "</div>";
+        } else {
+            // Dynamic contact map block so we hide some controls and set the tooltip differently
+            var name = parentRow.find(".property-name");
+            var address = parentRow.find(".property-address");
+            if (name.length > 0 || address.length > 0) {
+                tooltipContent += "<div class='info-window'>";
+            }
+            if (name.length > 0) {
+                tooltipContent += "<h4>" + name.html() + "</h4>";
+            }
+            if (address.length > 0) {
+                tooltipContent += "<p>" + address.html();
+                tooltipContent += "<a style='float:right;margin-top:10px;' href='https://www.google.com/maps/dir//" + latitude + "," + longitude + "' target='_blank'>Get directions</a></p>";
+            }
+            if (name.length > 0 || address.length > 0) {
+                tooltipContent += "</div>";
+            }
+        }
+
+        if (tooltipContent.length > 0) {
+            infoWindows[i] = new google.maps.InfoWindow({
+                content: tooltipContent
+            });
+        }
+
+        var markerBounds = new google.maps.LatLngBounds();
+
+        setMarker(map, markerBounds, mapEle, i);
+    }
+}
+
+function setMarker(map, markerBounds, mapEle, index) {
+
+    // If some information is required for the marker refer to:
+    // https://developers-dot-devsite-v2-prod.appspot.com/maps/documentation/javascript/examples/overlay-popup
+
+    // Adds markers to the map.
+
+    // Marker sizes are expressed as a Size of X,Y where the origin of the image
+    // (0,0) is located in the top left of the image.
+
+    // Origins, anchor positions and coordinates of the marker increase in the X
+    // direction to the right and in the Y direction down.
+    var image = {
+        url: '/Areas/Int/Static/themes/u17/p2/assets/images/location-pin.png',
+        // This marker is 40 pixels wide by 58 pixels high.
+        size: new google.maps.Size(40, 58),
+        // The origin for this image is (0, 0).
+        origin: new google.maps.Point(0, 0),
+        // The anchor for this image is the base of the flagpole at (20, 58).
+        anchor: new google.maps.Point(20, 58),
+        // This marker is 40 pixels wide by 58 pixels high.
+        scaledSize: new google.maps.Size(40, 58),
+    };
+    // Shapes define the clickable region of the icon. The type defines an HTML
+    // <area> element 'poly' which traces out a polygon as a series of X,Y points.
+    // The final coordinate closes the poly by connecting to the first coordinate.
+    //var shape = {
+    //    coords: [1, 1, 1, 32, 32, 32, 32, 1],
+    //    type: 'poly'
+    //};
+
+    var latitude = parseFloat(mapEle.getAttribute("data-latitude"));
+    var longitude = parseFloat(mapEle.getAttribute("data-longitude"));
+
+    var marker = new google.maps.Marker({
+        position: { lat: latitude, lng: longitude },
+        map: map,
+        draggable: false,
+        raiseOnDrag: false,
+        animation: google.maps.Animation.DROP,
+        //labelContent: mapEle.getAttribute('data-name') + ' Campus',
+        //shape: shape,
+        //   title: campus[0],
+        //   zIndex: campus[3],
+        //labelAnchor: new google.maps.Point(0, 0),
+        //labelClass: "unisa-u17-campus-labels",//, // the CSS class for the label
+        // labelInBackground: true,
+        icon: image //pinSymbol('red')
+    });
+
+    if (infoWindows[index] != null) {
+        google.maps.event.addListener(marker, 'click', function () {
+            //console.log('event');
+            infoWindows[index].open(map, this);
+        });
+    }
+
+
+    markerBounds.extend({ lat: latitude, lng: longitude });
+
+}

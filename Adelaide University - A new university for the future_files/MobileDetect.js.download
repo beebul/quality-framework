@@ -1,0 +1,31 @@
+﻿//ensure the page contains
+//https://cdnjs.cloudflare.com/ajax/libs/mobile-detect/1.4.4/mobile-detect.min.js
+
+//https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent#Mobile_Device_Detection
+function IsMobileDevice() {
+    var hasTouchScreen = false;
+    if ("maxTouchPoints" in navigator) {
+        hasTouchScreen = navigator.maxTouchPoints > 0;
+    } else if ("msMaxTouchPoints" in navigator) {
+        hasTouchScreen = navigator.msMaxTouchPoints > 0;
+    } else {
+        var mQ = window.matchMedia && matchMedia("(pointer:coarse)");
+        if (mQ && mQ.media === "(pointer:coarse)") {
+            hasTouchScreen = !!mQ.matches;
+        } else if ('orientation' in window) {
+            hasTouchScreen = true; // deprecated, but good fallback
+        } else {
+            // Only as a last resort, fall back to user agent sniffing
+            var UA = navigator.userAgent;
+            hasTouchScreen = (
+                /\b(BlackBerry|webOS|iPhone|IEMobile)\b/i.test(UA) ||
+                /\b(Android|Windows Phone|iPad|iPod)\b/i.test(UA)
+            );
+        }
+    }
+
+    const md = new MobileDetect(window.navigator.userAgent);
+    const isMobileDetected = md.mobile() !== null || md.phone() !== null || md.tablet() !== null ;
+
+    return hasTouchScreen && md.isPhoneSized(600) || isMobileDetected;
+}

@@ -1,0 +1,10 @@
+$(function() {
+    $(".au-timeline-month").on("click",function(event){
+        var eventText = $(this).text().trim().replace(/ /g,'').replace(/\n/g, " ");
+        //console.log(eventText);
+        dataLayer.push({
+            'event': 'timeline_click',
+            'timeline_event': eventText,
+        });
+    });
+});
